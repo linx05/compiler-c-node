@@ -28,88 +28,71 @@ stateLexer.addStateTransition(0, states.accepting.sin_oc[170], alphabet.semicolo
 stateLexer.addStateTransition(0, states.accepting.sin_oc[171], alphabet.coma);
 stateLexer.addStateTransition(0, states.transition[18], alphabet.doubleQuote);
 stateLexer.addStateTransition(0, states.transition[19], alphabet.singleQuote);
+stateLexer.addStateTransition(2, states.error[-500], alphabet.dot);
 
+stateLexer.addStateTransition(1, states.transition[1], alphabet.LETTERS);
+stateLexer.addStateTransition(1, states.transition[1], alphabet.NUMBERS);
+stateLexer.addStateTransition(1, states.accepting.oc[101]);
 
-stateLexer.addRule(0, (char)=> {
-    for (let space in alphabet.spaces) {
-        if (space === char) return;
-    }
-    if (alphabet.LETTERS.contains(char)) {
-        return states.transition[1];
-    }
-    else if (alphabet.NUMBERS.contains(char)) {
-        return states.transition[2]
-    }
-    else {
-        switch (char) {
-            case alphabet.math.add:
-                return states.transition[5];
-                break;
-            case alphabet.math.minus:
-                return states.transition[6];
-                break;
-            case alphabet.math.asterisk:
-                return states.transition[7];
-                break;
-            case alphabet.math.div:
-                return states.transition[8];
-                break;
-            case alphabet.math.percent:
-                return states.accepting.sin_oc[157];
-                break;
-            case alphabet.logic.ampersand:
-                return states.transition[9];
-                break;
-            case alphabet.logic.pipe:
-                return states.transition[13];
-                break;
-            case alphabet.logic.exclamation:
-                return states.transition[14];
-                break;
-            case alphabet.logic.moreThan:
-                return states.transition[15];
-                break;
-            case alphabet.logic.lessThan:
-                return states.transition[16];
-                break;
-            case alphabet.logic.equal:
-                return states.transition[17];
-                break;
-            case alphabet.blocks.openParenthesis:
-                return states.accepting.sin_oc[164];
-                break;
-            case alphabet.blocks.closeParenthesis:
-                return states.accepting.sin_oc[165];
-                break;
-            case alphabet.blocks.openSquare:
-                return states.accepting.sin_oc[166];
-                break;
-            case alphabet.blocks.closeSquare:
-                return states.accepting.sin_oc[167];
-                break;
-            case alphabet.blocks.openBracket:
-                return states.accepting.sin_oc[168];
-                break;
-            case alphabet.blocks.closeBracket:
-                return states.accepting.sin_oc[169];
-                break;
-            case alphabet.semicolon:
-                return states.accepting.sin_oc[170];
-                break;
-            case alphabet.coma:
-                return states.accepting.sin_oc[171];
-                break;
-            case alphabet.doubleQuote:
-                return states.transition[18];
-                break;
-            case alphabet.singleQuote:
-                return states.transition[19];
-                break;
-            default:
-                return states.transition[0];
-                break;
-        }
-    }
-});
+stateLexer.addStateTransition(2, states.transition[2], alphabet.NUMBERS);
+stateLexer.addStateTransition(2, states.transition[3], alphabet.dot);
+stateLexer.addStateTransition(2, states.error[-500], alphabet.LETTERS);
+stateLexer.addStateTransition(2, states.accepting.oc[102]);
+
+stateLexer.addStateTransition(3, states.transition[4], alphabet.NUMBERS);
+stateLexer.addStateTransition(3, states.error[-500]);
+
+stateLexer.addStateTransition(4, states.transition[4], alphabet.NUMBERS);
+stateLexer.addStateTransition(4, states.error[-500], alphabet.LETTERS);
+stateLexer.addStateTransition(4, states.accepting.oc[103]);
+
+stateLexer.addStateTransition(5, states.accepting.sin_oc[151], alphabet.math.add);
+stateLexer.addStateTransition(5, states.accepting.sin_oc[152], alphabet.math.equal);
+stateLexer.addStateTransition(5, states.accepting.oc[104]);
+
+stateLexer.addStateTransition(6, states.accepting.sin_oc[153], alphabet.math.minus);
+stateLexer.addStateTransition(6, states.accepting.sin_oc[154], alphabet.math.equal);
+stateLexer.addStateTransition(6, states.accepting.oc[105]);
+
+stateLexer.addStateTransition(7, states.accepting.sin_oc[155], alphabet.math.equal);
+stateLexer.addStateTransition(7, states.accepting.oc[106]);
+
+stateLexer.addStateTransition(8, states.accepting.sin_oc[156], alphabet.math.equal);
+stateLexer.addStateTransition(8, states.accepting.oc[107]);
+
+stateLexer.addStateTransition(9, states.accepting.sin_oc[158], alphabet.math.equal);
+
+stateLexer.addStateTransition(10, states.other.commentary, alphabet.spaces.eol);
+stateLexer.addStateTransition(10, states.transition[10]);
+
+stateLexer.addStateTransition(11, states.transition[12], alphabet.spaces.math.asterisk);
+stateLexer.addStateTransition(11, states.transition[11]);
+
+stateLexer.addStateTransition(12, states.other.commentary, alphabet.spaces.math.div);
+stateLexer.addStateTransition(12, states.transition[12]);
+
+stateLexer.addStateTransition(13, states.accepting.sin_oc[159], alphabet.logic.pipe);
+
+stateLexer.addStateTransition(14, states.accepting.sin_oc[160], alphabet.math.equal);
+stateLexer.addStateTransition(14, states.accepting.oc[108]);
+
+stateLexer.addStateTransition(15, states.accepting.sin_oc[161], alphabet.math.equal);
+stateLexer.addStateTransition(15, states.accepting.oc[109]);
+
+stateLexer.addStateTransition(16, states.accepting.sin_oc[162], alphabet.math.equal);
+stateLexer.addStateTransition(16, states.accepting.oc[110]);
+
+stateLexer.addStateTransition(17, states.accepting.sin_oc[163], alphabet.math.equal);
+stateLexer.addStateTransition(17, states.accepting.oc[111]);
+
+stateLexer.addStateTransition(18, states.accepting.sin_oc[172], alphabet.math.equal);
+stateLexer.addStateTransition(18, states.error[-500], alphabet.spaces.eol);
+stateLexer.addStateTransition(18, states.accepting.oc[18]);
+
+stateLexer.addStateTransition(19, states.error[-500], alphabet.doubleQuote);
+stateLexer.addStateTransition(19, states.accepting.oc[20]);
+
+stateLexer.addStateTransition(20, states.accepting.sin_oc[173], alphabet.math.equal);
+stateLexer.addStateTransition(20, states.accepting.oc[20]);
 
 
