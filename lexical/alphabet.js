@@ -53,7 +53,7 @@ exports = module.exports = {
         'Y',
         'Z'
     ],
-    numbers: [
+    NUMBERS: [
         '0',
         '1',
         '2',

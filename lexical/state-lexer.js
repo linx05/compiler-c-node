@@ -3,9 +3,19 @@ class StateChecker {
         this.states = [];
     }
 
-    addStateTransition (state, returnType, ...value) {
-        if(!value){
+    get StateTypes () {
+        return {
+            TRANSITION: 'transition',
+            ERROR     : 'error',
+            ACCEPTING : 'accepting',
+            COMMENTARY: 'commentary'
+        }
+    }
 
+
+    addStateTransition (state, returnType, value) {
+        if (!value) {
+            return this.addTransition(state, returnType)
         }
         _.map(value, v => {
             if (typeof v === 'string') {
@@ -20,7 +30,15 @@ class StateChecker {
         });
     }
 
+
+    getStates () {
+        return this.states;
+    }
+
     addTransition (state, returnType, value) {
+        if (!this.states[state]) {
+            this.states[state] = [];
+        }
         this.states[state].push({
             value,
             returnType
@@ -28,19 +46,27 @@ class StateChecker {
     }
 
     evaluate (state, char) {
-        this.states[state].map(obj=> {
-            if (obj.value === char) return obj.returnType;
+        let toReturn = undefined;
+
+        _.each(this.states[state],(stateRules=> {
+            if (stateRules.value === char) {
+                toReturn = stateRules.returnType;
+                return false;
+            }
+            if(stateRules.value === undefined){
+                toReturn = stateRules.returnType;
+                return false;
+            }
+        }));
+        return toReturn;
+    }
+
+    orderStates () {
+        this.states = _.map(this.states, (state)=> {
+            return  _.orderBy(state, ['value'], ['asc']);
         });
     }
-
-    ////////////////////////////
-    addRule (state, cb) {
-        this.states[state] = cb;
-    }
-
-    checkState (state, char) {
-        this.states[state]();
-    }
 }
+let stateChecker = new StateChecker();
 
 exports = module.exports = stateChecker;

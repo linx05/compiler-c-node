@@ -1,19 +1,22 @@
-const fs = require('fs');
-const path = require('path');
-let fileName = process.argv[2];
-const lexical = require('./lexical');
-var parser = require("node-c-parser");
-var lexer = require("node-c-lexer");
+global._ = require('lodash');
+global.fs = require('fs');
+global.path = require('path');
 
-//fs.readFile(path.normalize(fileName),(err, data)=>{
-//        lexical.generateTokens(data);
-//    //var tokenStream = lexer.lexUnit.tokenize(data);
-//    //console.log(tokenStream);
+
+
+let fileName = process.argv[2];
+let parser = require("node-c-parser");
+let lexer = require("node-c-lexer");
+
+const lexical = require('./lexical');
+
+const stateLexer = require('./lexical/state-lexer');
+
+let tokens = lexical.generateTokens(path.normalize(fileName));
+
+//fs.readFile(path.normalize(fileName),(err,data)=>{
+//    var tokens = parser.lexer.lexUnit.tokenize(data);
+//    console.log(tokens);
 //});
 
-fs.readFile(path.normalize(fileName),(err,data)=>{
-    var tokens = parser.lexer.lexUnit.tokenize(data);
-    console.log(tokens);
-});
-
-lexical.generateTokens(fileName);
+//lexical.generateTokens(fileName);
