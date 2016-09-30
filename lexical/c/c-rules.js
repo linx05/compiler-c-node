@@ -1,6 +1,6 @@
-const stateLexer = require('./state-lexer');
-const alphabet = require('./alphabet');
-const states = require('./states');
+const stateLexer = require('./../state-lexer');
+const alphabet = require('./../alphabet');
+const states = require('./../states');
 /*
  It may return an token obj, another state, or error obj
  */
@@ -59,7 +59,7 @@ stateLexer.addStateTransition(7, states.accepting[155], alphabet.math.equal);
 stateLexer.addStateTransition(7, states.accepting[106]);
 
 //TODO: DEAL WITH EOL character
-//stateLexer.addStateTransition(8, states.transition[10], alphabet.math.div);
+stateLexer.addStateTransition(8, states.transition[10], alphabet.math.div);
 stateLexer.addStateTransition(8, states.transition[11], alphabet.math.asterisk);
 stateLexer.addStateTransition(8, states.accepting[156], alphabet.math.equal);
 stateLexer.addStateTransition(8, states.accepting[107]);
