@@ -44,7 +44,7 @@ class Lexical {
                 this.analyzeState(char, lineNum, charNum);
             }
         }
-        else if(result.type === states.StateTypes.COMMENTARY){
+        else if (result.type === states.StateTypes.COMMENTARY) {
             this.state = 0;
             this.lexeme = '';
         }
@@ -53,13 +53,21 @@ class Lexical {
             this.state = result.value;
         }
         else if (result.type === states.StateTypes.ERROR) {
-            console.log('ERROR!', result.value);
+            console.log(`lexical error: unexpected character ${char} at ${lineNum}:${charNum}`);
             this.state = 0;
+            return {
+                error: {
+                    type: 'lexical',
+                    line: lineNum,
+                    num : charNum,
+                    char
+                }
+            };
         }
     }
 
     generateTokens (file) {
-        return new Promise((resolve)=>{
+        return new Promise((resolve, reject)=> {
             let rl = readline.createInterface({
                 input: fs.createReadStream(file)
             });
@@ -72,11 +80,15 @@ class Lexical {
                     this.analyzeState('\n', lineNum, charNum + 1)
                 }
                 lineNum += 1;
-                charNum = 0;
+                charNum = 1;
                 _.map(line, char => {
-                    charNum += 1;
-                    this.analyzeState(char, lineNum, charNum);
-                });
+                        charNum += 1;
+                        let result = this.analyzeState(char, lineNum, charNum);
+                        if (result && result.hasOwnProperty('error')) {
+                            reject(result.error);
+                        }
+                    }
+                );
             });
             rl.on('close', () => {
                 resolve(this.tokens);
