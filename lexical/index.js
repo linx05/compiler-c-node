@@ -22,11 +22,11 @@ class Lexical {
         this.char = 0;
     }
 
-    analyzeState (char, lineNum, charNum) {
+    _analyzeState (char, lineNum, charNum) {
         //TODO: RETURN THE STATE AND IF IT RETURNS A TOKEN GENERATE TOKEN
         //PASS TOKEN THROUGH RULE ANALYSIS
         //this.lexeme += char;
-        //if (char === '\n') console.log('found eol!', char, lineNum, charNum)
+        //if (char === 'EOF') console.log('found EOF!', char, lineNum, charNum,this.state);
 
         let result = states.evaluate(this.state, char);
         if (!result) {
@@ -41,7 +41,7 @@ class Lexical {
             this.tokens.push(generateToken(this.lexeme.trim(), result.value, lineNum, charNum));
             this.lexeme = '';
             if (result.otherChar) {
-                this.analyzeState(char, lineNum, charNum);
+                this._analyzeState(char, lineNum, charNum);
             }
         }
         else if (result.type === states.StateTypes.COMMENTARY) {
@@ -53,7 +53,7 @@ class Lexical {
             this.state = result.value;
         }
         else if (result.type === states.StateTypes.ERROR) {
-            console.log(`lexical error: unexpected character ${char} at ${lineNum}:${charNum}`);
+            console.log(`lexical error: unexpected character ${char} at ${lineNum}:${charNum}`,result,this.state);
             this.state = 0;
             return {
                 error: {
@@ -77,20 +77,29 @@ class Lexical {
 
             rl.on('line', (line)=> {
                 if (lineNum != 0) {
-                    this.analyzeState('\n', lineNum, charNum + 1)
+                    this._analyzeState('\n', lineNum, charNum + 1)
                 }
                 lineNum += 1;
                 charNum = 1;
                 _.map(line, char => {
                         charNum += 1;
-                        let result = this.analyzeState(char, lineNum, charNum);
+                        let result = this._analyzeState(char, lineNum, charNum);
                         if (result && result.hasOwnProperty('error')) {
+                            this.error = true;
+                            rl.close();
                             reject(result.error);
                         }
                     }
                 );
             });
             rl.on('close', () => {
+                if(!this.error){
+                    let result = this._analyzeState('EOF', 0, 0);
+                    if (result && result.hasOwnProperty('error')) {
+                        rl.close();
+                        reject(result.error);
+                    }
+                }
                 resolve(this.tokens);
             });
         });

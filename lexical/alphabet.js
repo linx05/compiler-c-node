@@ -66,7 +66,7 @@ exports = module.exports = {
         '9'
     ],
     spaces: {
-      tab:'\t', eol:'\n',space:' '
+      tab:'\t', eol:'\n',space:' ', eof: 'EOF'
     },
     math: {
         add:'+',minus:'-',div:'/', asterisk: '*',percent:'%'

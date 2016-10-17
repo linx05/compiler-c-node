@@ -4,7 +4,6 @@ const states = require('./../states');
 /*
  It may return an token obj, another state, or error obj
  */
-
 stateLexer.addStateTransition(0, states.transition[1], alphabet.LETTERS);
 stateLexer.addStateTransition(0, states.transition[2], alphabet.NUMBERS);
 stateLexer.addStateTransition(0, states.transition[5], alphabet.math.add);
@@ -58,7 +57,6 @@ stateLexer.addStateTransition(6, states.accepting[105]);
 stateLexer.addStateTransition(7, states.accepting[155], alphabet.math.equal);
 stateLexer.addStateTransition(7, states.accepting[106]);
 
-//TODO: DEAL WITH EOL character
 stateLexer.addStateTransition(8, states.transition[10], alphabet.math.div);
 stateLexer.addStateTransition(8, states.transition[11], alphabet.math.asterisk);
 stateLexer.addStateTransition(8, states.accepting[156], alphabet.math.equal);
@@ -70,9 +68,11 @@ stateLexer.addStateTransition(10, states.other.commentary, alphabet.spaces.eol);
 stateLexer.addStateTransition(10, states.transition[10]);
 
 stateLexer.addStateTransition(11, states.transition[12], alphabet.math.asterisk);
+stateLexer.addStateTransition(11, states.error[-500], alphabet.spaces.eof);
 stateLexer.addStateTransition(11, states.transition[11]);
 
 stateLexer.addStateTransition(12, states.other.commentary, alphabet.math.div);
+stateLexer.addStateTransition(12, states.error[-500], alphabet.spaces.eof);
 stateLexer.addStateTransition(12, states.transition[12]);
 
 stateLexer.addStateTransition(13, states.accepting[159], alphabet.logic.pipe);
@@ -91,12 +91,15 @@ stateLexer.addStateTransition(17, states.accepting[111]);
 
 stateLexer.addStateTransition(18, states.accepting[172], alphabet.doubleQuote);
 stateLexer.addStateTransition(18, states.error[-500], alphabet.spaces.eol);
+//stateLexer.addStateTransition(18, states.error[-500], alphabet.spaces.eof);
 stateLexer.addStateTransition(18, states.transition[18]);
 
+//stateLexer.addStateTransition(19, states.error[-500], alphabet.spaces.eof);
 stateLexer.addStateTransition(19, states.error[-500], alphabet.doubleQuote);
 stateLexer.addStateTransition(19, states.transition[20]);
 
 stateLexer.addStateTransition(20, states.accepting[173], alphabet.singleQuote);
+//stateLexer.addStateTransition(20, states.error[-500], alphabet.spaces.eof);
 stateLexer.addStateTransition(20, states.transition[20]);
 
 stateLexer.orderStates();

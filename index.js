@@ -13,4 +13,6 @@ const stateLexer = require('./lexical/state-lexer');
 let tokensGenerator = lexical.generateTokens(path.normalize(fileName));
 tokensGenerator.then((tokens)=>{
     console.log(tokens);
+}).catch((error)=>{
+    console.log(error);
 });

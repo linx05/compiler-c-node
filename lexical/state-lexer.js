@@ -17,17 +17,23 @@ class StateChecker {
         if (!value) {
             return this.addTransition(state, returnType)
         }
-        _.map(value, v => {
-            if (typeof v === 'string') {
-                this.addTransition(state, returnType, v);
-            }
-            else if (v instanceof Array) {
-                this.addStateTransition(state, returnType, v);
-            }
-            else if (v instanceof Object) {
-                this.addStateTransition(state, returnType, Object.values(v))
-            }
-        });
+        if (typeof value === 'string') {
+            this.addTransition(state, returnType, value);
+        }
+        else{
+            _.map(value, (v) => {
+                if (v instanceof Array) {
+                    this.addStateTransition(state, returnType, v);
+                }
+                else if (v instanceof Object) {
+                    this.addStateTransition(state, returnType, Object.values(v))
+                }
+                else if (typeof v === 'string') {
+                    this.addTransition(state, returnType, v);
+                }
+            });
+        }
+
     }
 
 
@@ -47,7 +53,6 @@ class StateChecker {
 
     evaluate (state, char) {
         let toReturn = undefined;
-
         _.each(this.states[state],(stateRules=> {
             if (stateRules.value === char) {
                 toReturn = stateRules.returnType;
