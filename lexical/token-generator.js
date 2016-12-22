@@ -1,9 +1,5 @@
 const keywords = require('./c/keywords');
-
-const TokenTypes = {
-    KEYWORD : 'keyword',
-    VARIABLE: 'variable'
-};
+const TokenTypes = require('./TokenTypes');
 exports = module.exports = ({
     lexeme,
     state,
