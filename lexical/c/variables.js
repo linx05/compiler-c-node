@@ -1,4 +1,4 @@
-export default {
+module.exports = {
 	BOOL: 'bool',
 	CHAR: 'char',
 	UNSIGNED: 'unsigned',
@@ -6,4 +6,4 @@ export default {
 	FLOAT: 'float',
 	DOUBLE: 'double',
 	STRING: 'string'
-}
+};

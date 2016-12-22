@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon --exec babel-node index.js test.c",
+    "build": "babel src --out-dir dist",
     "test": "npm start test"
   },
   "repository": {
@@ -25,13 +27,15 @@
   },
   "homepage": "https://github.com/linx05/compiler-c-node#readme",
   "dependencies": {
-    "babel-core": "^6.18.2",
-    "babel-polyfill": "^6.16.0",
-    "babel-preset-es2015": "^6.18.0",
     "c-preprocessor": "^0.2.7",
     "linebyline": "^1.3.0",
     "lodash": "^4.15.0",
     "node-c-parser": "0.0.2",
     "objectmodel": "^2.5.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
   }
 }

@@ -1,6 +1,7 @@
 exports = module.exports =
 	['auto',
 		'break',
+		'bool',
 		'main',
 		'case',
 		'char',
@@ -17,6 +18,7 @@ exports = module.exports =
 		'goto',
 		'if',
 		'int',
+		'string',
 		'long',
 		'register',
 		'return',

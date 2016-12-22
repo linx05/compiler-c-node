@@ -1,10 +1,9 @@
-let readline = require('readline');
-
-const rules = require('./c/c-rules');
-const states = require('./state-lexer');
-const tokenGenerator = require('./token-generator');
-
-function generateToken (lexeme, state, charNum, lineNum) {
+import readline from "readline";
+import rules from "./c/c-rules";
+import states from "./state-lexer";
+import tokenGenerator from "./token-generator";
+import _ from "lodash";
+function generateToken (lexeme, state, lineNum, charNum) {
     return tokenGenerator({
         lexeme,
         state,

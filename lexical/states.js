@@ -1,3 +1,4 @@
+import _ from 'lodash';
 let obj = {
     other     : {
         commentary: {type: 'commentary'},

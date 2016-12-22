@@ -1,9 +1,9 @@
-import tokenTypes from '../lexical/TokenTypes';
-import keywords from '../lexical/c/keywords';
-import alphabet from '../lexical/alphabet';
-import variables from '../lexical/c/variables';
-
-class SyntaxAnalysis {
+const tokenTypes = require('../lexical/TokenTypes');
+const keywords = require( '../lexical/c/keywords');
+const alphabet = require( "../lexical/alphabet");
+const variables = require( "../lexical/c/variables");
+import {SyntaxException} from '../Exeptions';
+export default class SyntaxAnalysis {
 
 	constructor (tokens) {
 		this.tokens = tokens;
@@ -12,6 +12,7 @@ class SyntaxAnalysis {
 	}
 
 	_addVariable({type, token, value = undefined}){
+		// console.log(`Type : ${JSON.stringify(type,null,2)}`, `Token: ${JSON.stringify(token,null,2)}`);
 		this.variables.push({
 			type,
 			name: token.lexeme,
@@ -20,13 +21,13 @@ class SyntaxAnalysis {
 		})
 	}
 
-	_peek () {
-		return this.tokens[this.currentIndex];
+	_peek (add = 0) {
+		return this.tokens[this.currentIndex+add];
 	}
 
-	_next () {
+	_next (add=1) {
 		this.activeToken = this._peek();
-		this.currentIndex++;
+		this.currentIndex+=add;
 		return this.activeToken;
 	}
 
@@ -35,7 +36,8 @@ class SyntaxAnalysis {
 	}
 
 	_expectedCharException (missingLexeme, receivedLexeme = this.activeToken) {
-		throw new Exception(`Expected ${missingLexeme}, received ${receivedLexeme.lexeme} at ${receivedLexeme.lineNum}:${receivedLexeme.charNum}`);
+		console.log(this.activeToken);
+		throw new SyntaxException(`Expected ${missingLexeme}, received ${receivedLexeme.lexeme} at ${receivedLexeme.lineNum}:${receivedLexeme.charNum}`);
 	}
 
 	_checkKeyword (token, keyword, throwException = true) {
@@ -46,30 +48,38 @@ class SyntaxAnalysis {
 
 	_isVariable (token, throwException = true) {
 		if (token.type === tokenTypes.VARIABLE) return true;
-		if (throwException) return this._expectedCharException(keyword, token);
+		if (throwException) return this._expectedCharException('variable name', token);
 		return false;
 	}
 
 	_checkLexeme (token, keyword, throwException = true) {
 		if (Array.isArray(keyword)) {
-			if (keyword.contains(token.lexeme)) return true;
+			if (keyword.includes(token.lexeme)) return true;
 		}
 		if (token.lexeme == keyword) return true;
 		if (throwException) return this._expectedCharException(keyword, token);
 		return false;
 	}
 
-
+	analyze() {
+		if(this.mainMethod() || this.variableDeclaration()){
+			return this.analyze();
+		}
+		return this.variables;
+	}
+	
 	mainMethod () {
-		if (this._checkKeyword(this._next(), 'int')) {
-			if (this._checkKeyword(this._next(), 'main')) {
-				if (this._checkLexeme(this._next(), alphabet.blocks.openParenthesis)) {
-					if (this._checkLexeme(this._next(), alphabet.blocks.closeParenthesis)) {
+		if (this._checkKeyword(this._peek(), 'int', false)) {
+			if (this._checkKeyword(this._peek(1), 'main', false)) {
+				if (this._checkLexeme(this._peek(2), alphabet.blocks.openParenthesis)) {
+					if (this._checkLexeme(this._peek(3), alphabet.blocks.closeParenthesis)) {
+						this._next(4);
 						return this.functionBlock();
 					}
 				}
 			}
 		}
+		return false;
 	}
 
 	variablesOrStatements () {
@@ -81,32 +91,35 @@ class SyntaxAnalysis {
 			let type = this._next();
 			this._isVariable(this._peek(), true);
 			let variable = this._next();
+			this._addVariable({type, token: variable});
 			if (this._checkLexeme(this._peek(),alphabet.semicolon,false)) {
-				this._addVariable({type, value: variable});
+				this._next();
 				return true;
 			}
 			else if (this._checkLexeme(this._peek(),alphabet.coma,false)) {
+				this._next();
 				let variables = this.multipleVariableDeclaration(type);
 				if(!variables){
 					return this._expectedCharException('variable',alphabet.semicolon);
 				}
 				else {
-					_.each(variables,variable => {
-						this._addVariable({type, value: variable});
+					_.each(variables, variable => {
+						this._addVariable(variable);
 					});
+					this._next();
 					return true;
 				}
 			}
 			else return false;
 		}
-		else return false;
+		return false;
 	}
 
 	multipleVariableDeclaration (type, variables = []) {
 		if(this._isVariable(this._peek(), false)) {
 			variables.push({
 				type,
-				variable: this._next()
+				token: this._next()
 			})
 		}
 		if(this._checkLexeme(this._peek(),alphabet.semicolon, false)){
@@ -128,6 +141,7 @@ class SyntaxAnalysis {
 
 
 	functionBlock () {
+		return false;
 		if (this._checkLexeme(this._next(), alphabet.blocks.openBracket)) {
 
 		}
