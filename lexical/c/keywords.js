@@ -22,6 +22,8 @@ exports = module.exports =
 		'long',
 		'register',
 		'return',
+		'false',
+		'true',
 		'short',
 		'signed',
 		'sizeof',

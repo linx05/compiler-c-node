@@ -14,10 +14,10 @@ const stateLexer = require('./lexical/state-lexer');
 
 let tokensGenerator = lexical.generateTokens(path.normalize(fileName));
 tokensGenerator.then((tokens)=>{
-    // console.log(tokens);
-
+    console.log(tokens);
 	const syntaxAnalyzer = new Syntax(tokens);
-	console.log(syntaxAnalyzer.analyze());
+	// console.log(syntaxAnalyzer.analyze());
+	syntaxAnalyzer.analyze()
 
 
 }).catch((error)=>{

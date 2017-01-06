@@ -3,10 +3,12 @@ string cadena3, string2;
 int main(){
     int x;
     int z;
-    string cadena;
-	string cadena2;
-    cadena = "hola ";
-    cadena2 =  "mundo";
+    ++x;
+    x = false;
+//    string cadena;
+//	string cadena2;
+//    cadena = "hola ";
+//    cadena2 =  "mundo";
 //
 //    //int z; //variable duplicada
 //    //zazaza = 3.1416; //variable no declarada

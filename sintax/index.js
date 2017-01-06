@@ -1,7 +1,7 @@
 const tokenTypes = require('../lexical/TokenTypes');
-const keywords = require( '../lexical/c/keywords');
-const alphabet = require( "../lexical/alphabet");
-const variables = require( "../lexical/c/variables");
+const keywords = require('../lexical/c/keywords');
+const alphabet = require("../lexical/alphabet");
+const variables = require("../lexical/c/variables");
 import {SyntaxException} from '../Exeptions';
 export default class SyntaxAnalysis {
 
@@ -11,7 +11,7 @@ export default class SyntaxAnalysis {
 		this.variables = [];
 	}
 
-	_addVariable({type, token, value = undefined}){
+	_addVariable ({type, token, value = undefined}) {
 		// console.log(`Type : ${JSON.stringify(type,null,2)}`, `Token: ${JSON.stringify(token,null,2)}`);
 		this.variables.push({
 			type,
@@ -22,16 +22,17 @@ export default class SyntaxAnalysis {
 	}
 
 	_peek (add = 0) {
-		return this.tokens[this.currentIndex+add];
+		return this.tokens[this.currentIndex + add];
 	}
 
-	_next (add=1) {
+	_next (add = 1) {
 		this.activeToken = this._peek();
-		this.currentIndex+=add;
+		this.currentIndex += add;
+		this.activeToken = this.tokens[this.currentIndex];
 		return this.activeToken;
 	}
 
-	__eof () {
+	_eof () {
 		return this.currentIndex >= this.tokens.length;
 	}
 
@@ -61,20 +62,103 @@ export default class SyntaxAnalysis {
 		return false;
 	}
 
-	analyze() {
-		if(this.mainMethod() || this.variableDeclaration()){
+	///////////////////////////////////////////////////////////////////////////
+
+	analyze () {
+		if (this.mainMethod() || this.variableDeclaration()) {
 			return this.analyze();
 		}
 		return this.variables;
 	}
-	
+
+	/*
+		Base Types
+	 */
+	bool () {
+		return (this._peek().type === tokenTypes.KEYWORD
+		&& (this._peek().lexeme.toLowerCase() === 'false' || this._peek().lexeme.toLowerCase() === 'true'))
+	}
+	char () {
+		return (this._peek().state === 173);
+	}
+
+	decimal () {
+		return (this._peek().state === 103);
+	}
+
+	string () {
+		return (this._peek().state === 172);
+	}
+
+	number () {
+		return (this._peek().state === 102 || this.decimal());
+	}
+
+	expression (throwException = false) {
+
+	}
+
+	expressionRelational () {
+
+	}
+
+	factor () {
+
+	}
+
+	term () {
+
+	}
+
+	functionBlock () {
+		if(this._checkLexeme(this._peek(),alphabet.blocks.closeBracket,false)) return true;
+		if (this.incrementOrDecrement() || this.variableDeclaration()) return this.functionBlock();
+		else return this._expectedCharException('Expression');
+	}
+
+	incrementOrDecrement () {
+		console.log('checking if increment');
+		if (this._peek().state === 151 || this._peek().state === 154) {
+			let op = this._next();
+			if(this._peek().type === tokenTypes.VARIABLE) {
+				let variable = this._next();
+				_.first(this.variables,variable => {
+					return variable.token.lexeme === variable.lexeme;
+				});
+				if(this._checkLexeme(this._peek(),alphabet.semicolon)) {
+					this._next();
+					return true;
+				}
+			}
+			else return this._expectedCharException('Variable',this._next());
+		}
+		else if (this._peek().type == tokenTypes.VARIABLE) {
+
+		}
+		return false;
+	}
+
+	ifElse () {
+
+	}
+
+	iteration () {
+
+	}
+
+	IO () {
+
+	}
+
 	mainMethod () {
 		if (this._checkKeyword(this._peek(), 'int', false)) {
 			if (this._checkKeyword(this._peek(1), 'main', false)) {
 				if (this._checkLexeme(this._peek(2), alphabet.blocks.openParenthesis)) {
 					if (this._checkLexeme(this._peek(3), alphabet.blocks.closeParenthesis)) {
-						this._next(4);
-						return this.functionBlock();
+						if(this._checkLexeme(this._peek(4),alphabet.blocks.openBracket)) {
+							this._next(5);
+							return this.functionBlock();
+						}
 					}
 				}
 			}
@@ -82,25 +166,64 @@ export default class SyntaxAnalysis {
 		return false;
 	}
 
-	variablesOrStatements () {
+	multipleVariableDeclaration (type, variables = []) {
+		if (this._isVariable(this._peek(), false)) {
+			variables.push({
+				type,
+				token: this._next()
+			})
+		}
+		if (this._checkLexeme(this._peek(), alphabet.semicolon, false)) {
+			return variables;
+		}
+		else if (this._checkLexeme(this._peek(), alphabet.coma, false)) {
+			this._next();
+			return this.multipleVariableDeclaration(type, variables);
+		}
+		else {
+			if (variables.length > 0) return this._expectedCharException('variable', this._next());
+			return false;
+		}
+	}
 
+	returnStatement () {
+		if (this._checkLexeme(this._peek(), 'return')) {
+			this._next();
+			// if(this._peek().type == 'variable' || ){
+			//
+			// }
+		}
+		return false;
+	}
+
+	variableAssignment () {
+		if(this._peek().type === tokenTypes.VARIABLE) {
+			let variable = this._next();
+			if(this._checkKeyword(this._peek(), alphabet.logic.equal)){
+				if(this.expression()) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	variableDeclaration (throwException = false) {
+		console.log('checking variable declaration');
 		if (this._checkKeyword(this._peek(), Object.values(variables), throwException)) {
 			let type = this._next();
 			this._isVariable(this._peek(), true);
 			let variable = this._next();
 			this._addVariable({type, token: variable});
-			if (this._checkLexeme(this._peek(),alphabet.semicolon,false)) {
+			if (this._checkLexeme(this._peek(), alphabet.semicolon, false)) {
 				this._next();
 				return true;
 			}
-			else if (this._checkLexeme(this._peek(),alphabet.coma,false)) {
+			else if (this._checkLexeme(this._peek(), alphabet.coma, false)) {
 				this._next();
 				let variables = this.multipleVariableDeclaration(type);
-				if(!variables){
-					return this._expectedCharException('variable',alphabet.semicolon);
+				if (!variables) {
+					return this._expectedCharException('variable', alphabet.semicolon);
 				}
 				else {
 					_.each(variables, variable => {
@@ -113,38 +236,6 @@ export default class SyntaxAnalysis {
 			else return false;
 		}
 		return false;
-	}
-
-	multipleVariableDeclaration (type, variables = []) {
-		if(this._isVariable(this._peek(), false)) {
-			variables.push({
-				type,
-				token: this._next()
-			})
-		}
-		if(this._checkLexeme(this._peek(),alphabet.semicolon, false)){
-			return variables;
-		}
-		else if(this._checkLexeme(this._peek(),alphabet.coma, false)) {
-			this._next();
-			return this.multipleVariableDeclaration(type, variables);
-		}
-		else {
-			if(variables.length > 0) return this._expectedCharException('variable',this._next());
-			return false;
-		}
-	}
-
-	expression(throwException = false) {
-
-	}
-
-
-	functionBlock () {
-		return false;
-		if (this._checkLexeme(this._next(), alphabet.blocks.openBracket)) {
-
-		}
 	}
 
 }
